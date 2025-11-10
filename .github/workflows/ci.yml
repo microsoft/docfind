@@ -19,3 +19,22 @@ jobs:
     - name: Test
       run: cargo test
       working-directory: core
+
+  build:
+    runs-on: ubuntu-latest
+    needs: test
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Install wasm-pack
+      run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
+    
+    - name: Build WASM template
+      run: wasm-pack build wasm --out-name search --release --target web
+    
+    - name: Minify JavaScript
+      run: npx --yes esbuild --bundle wasm/pkg/search.js --format=esm --minify --outfile=wasm/pkg/search.js --allow-overwrite
+    
+    - name: Build CLI
+      run: cargo build --release -p cli

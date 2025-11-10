@@ -69,3 +69,27 @@ jobs:
       run: cargo build --release -p docfind --target ${{ matrix.target }}
       env:
         CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER: aarch64-linux-gnu-gcc
+    
+    - name: Package binaries (Unix)
+      if: runner.os != 'Windows'
+      run: |
+        cd target/${{ matrix.target }}/release
+        tar czf docfind-${{ matrix.target }}.tar.gz docfind
+        mv docfind-${{ matrix.target }}.tar.gz ${{ github.workspace }}
+    
+    - name: Package binaries (Windows)
+      if: runner.os == 'Windows'
+      run: |
+        cd target/${{ matrix.target }}/release
+        7z a docfind-${{ matrix.target }}.zip docfind.exe
+        mv docfind-${{ matrix.target }}.zip ${{ github.workspace }}
+      shell: pwsh
+    
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: docfind-${{ matrix.target }}
+        path: |
+          docfind-${{ matrix.target }}.tar.gz
+          docfind-${{ matrix.target }}.zip
+        if-no-files-found: ignore

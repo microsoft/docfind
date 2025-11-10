@@ -53,7 +53,7 @@ This creates:
   
   await init();
   
-  const results = search('getting started', 10);
+  const results = search('needle');
   const documents = JSON.parse(results);
   
   console.log(documents);

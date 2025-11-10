@@ -1,4 +1,3 @@
-#[cfg(test)]
 mod tests {
 	use crate::Index;
 	use crate::{Document, FsstStrVec};
@@ -9,7 +8,6 @@ mod tests {
 	// ========================================================================
 
 	#[test]
-	#[cfg(feature = "cli")]
 	fn test_fsst_str_vec_basic() {
 		// Simple sanity test for FsstStrVec
 
@@ -25,7 +23,6 @@ mod tests {
 	}
 
 	#[test]
-	#[cfg(feature = "cli")]
 	fn test_fsst_str_vec_out_of_bounds() {
 		// Test that getting an out-of-bounds index returns None
 		let strings = vec!["hello", "world"];
@@ -36,7 +33,6 @@ mod tests {
 	}
 
 	#[test]
-	#[cfg(feature = "cli")]
 	fn test_fsst_str_vec_empty() {
 		// Test behavior with empty vector
 		let strings: Vec<&str> = vec![];
@@ -47,7 +43,6 @@ mod tests {
 	}
 
 	#[test]
-	#[cfg(feature = "cli")]
 	fn test_fsst_str_vec_single_item() {
 		// Test with a single string
 		let strings = vec!["solo"];
@@ -59,7 +54,6 @@ mod tests {
 	}
 
 	#[test]
-	#[cfg(feature = "cli")]
 	fn test_fsst_str_vec_long_strings() {
 		// Test with longer strings to verify compression works
 		let strings = vec![
@@ -76,7 +70,6 @@ mod tests {
 	}
 
 	#[test]
-	#[cfg(feature = "cli")]
 	fn test_fsst_str_vec_unicode() {
 		// Test with Unicode strings
 		let strings = vec!["Hello 世界", "Rust 🦀", "Café ☕"];
@@ -139,7 +132,6 @@ mod tests {
 	// ========================================================================
 
 	#[test]
-	#[cfg(feature = "cli")]
 	fn test_build_index_simple() {
 		// Test building a simple index with a few documents
 
@@ -168,7 +160,6 @@ mod tests {
 	}
 
 	#[test]
-	#[cfg(feature = "cli")]
 	fn test_build_index_empty() {
 		// Test building an index with no documents
 		let documents: Vec<Document> = vec![];
@@ -180,7 +171,6 @@ mod tests {
 	}
 
 	#[test]
-	#[cfg(feature = "cli")]
 	fn test_build_index_single_document() {
 		// Test building an index with a single document
 		let documents = vec![Document {
@@ -199,7 +189,6 @@ mod tests {
 	}
 
 	#[test]
-	#[cfg(feature = "cli")]
 	fn test_build_index_duplicate_titles() {
 		// Test with documents that have similar or duplicate titles
 		let documents = vec![
@@ -228,7 +217,6 @@ mod tests {
 	// ========================================================================
 
 	#[test]
-	#[cfg(feature = "cli")]
 	fn test_index_serialization() {
 		// Test that we can serialize and deserialize an index
 
@@ -258,7 +246,6 @@ mod tests {
 	}
 
 	#[test]
-	#[cfg(feature = "cli")]
 	fn test_index_serialization_roundtrip() {
 		// Test that we can serialize and deserialize multiple times
 		let documents = vec![
@@ -300,7 +287,6 @@ mod tests {
 	// ========================================================================
 
 	#[test]
-	#[cfg(all(feature = "cli", feature = "wasm"))]
 	fn test_search_single_word() {
 		// Test searching for a single word
 		let documents = vec![
@@ -329,7 +315,6 @@ mod tests {
 	}
 
 	#[test]
-	#[cfg(all(feature = "cli", feature = "wasm"))]
 	fn test_search_case_insensitive() {
 		// Test that search is case-insensitive
 		let documents = vec![Document {
@@ -357,7 +342,6 @@ mod tests {
 	}
 
 	#[test]
-	#[cfg(all(feature = "cli", feature = "wasm"))]
 	fn test_search_no_results() {
 		// Test searching for something that doesn't exist
 		let documents = vec![Document {
@@ -375,7 +359,6 @@ mod tests {
 	}
 
 	#[test]
-	#[cfg(all(feature = "cli", feature = "wasm"))]
 	fn test_search_empty_query() {
 		// Test searching with an empty query
 		let documents = vec![Document {
@@ -399,7 +382,6 @@ mod tests {
 	// ========================================================================
 
 	#[test]
-	#[cfg(all(feature = "cli", feature = "wasm"))]
 	fn test_search_multiple_words() {
 		// Test searching for multiple words
 		let documents = vec![
@@ -444,7 +426,6 @@ mod tests {
 	}
 
 	#[test]
-	#[cfg(all(feature = "cli", feature = "wasm"))]
 	fn test_search_partial_word_match() {
 		// Test that partial word matches work
 		let documents = vec![Document {
@@ -471,7 +452,6 @@ mod tests {
 	// ========================================================================
 
 	#[test]
-	#[cfg(all(feature = "cli", feature = "wasm"))]
 	fn test_search_title_match_ranks_higher() {
 		// Test that title matches rank higher than body matches
 		let documents = vec![
@@ -500,7 +480,6 @@ mod tests {
 	}
 
 	#[test]
-	#[cfg(all(feature = "cli", feature = "wasm"))]
 	fn test_search_multiple_keyword_matches() {
 		// Test that documents matching multiple keywords rank higher
 		let documents = vec![
@@ -544,7 +523,6 @@ mod tests {
 	}
 
 	#[test]
-	#[cfg(all(feature = "cli", feature = "wasm"))]
 	fn test_search_max_results_limit() {
 		// Test that max_results parameter limits results correctly
 		let documents = vec![
@@ -594,7 +572,6 @@ mod tests {
 	// ========================================================================
 
 	#[test]
-	#[cfg(all(feature = "cli", feature = "wasm"))]
 	fn test_search_technical_terms() {
 		// Test searching for technical terms and acronyms
 		let documents = vec![
@@ -629,7 +606,6 @@ mod tests {
 	}
 
 	#[test]
-	#[cfg(all(feature = "cli", feature = "wasm"))]
 	fn test_search_with_special_characters() {
 		// Test searching with special characters
 		let documents = vec![
@@ -659,7 +635,6 @@ mod tests {
 	}
 
 	#[test]
-	#[cfg(all(feature = "cli", feature = "wasm"))]
 	fn test_search_compound_keywords() {
 		// Test searching for compound keywords and multi-word phrases
 		let documents = vec![
@@ -699,7 +674,6 @@ mod tests {
 	}
 
 	#[test]
-	#[cfg(all(feature = "cli", feature = "wasm"))]
 	fn test_search_with_stopwords() {
 		// Test that common stop words don't interfere with search
 		let documents = vec![Document {
@@ -723,7 +697,6 @@ mod tests {
 	}
 
 	#[test]
-	#[cfg(all(feature = "cli", feature = "wasm"))]
 	fn test_search_with_numbers() {
 		// Test searching with version numbers and numeric values
 		let documents = vec![
@@ -760,7 +733,6 @@ mod tests {
 	}
 
 	#[test]
-	#[cfg(all(feature = "cli", feature = "wasm"))]
 	fn test_search_long_query() {
 		// Test with a longer, more natural language query
 		let documents = vec![
@@ -801,7 +773,6 @@ mod tests {
 	// ========================================================================
 
 	#[test]
-	#[cfg(all(feature = "cli", feature = "wasm"))]
 	fn test_search_many_documents() {
 		// Test with a larger number of documents
 		let mut documents = Vec::new();
@@ -832,7 +803,6 @@ mod tests {
 	}
 
 	#[test]
-	#[cfg(all(feature = "cli", feature = "wasm"))]
 	fn test_search_empty_fields() {
 		// Test with documents that have empty fields
 		let documents = vec![
@@ -861,7 +831,6 @@ mod tests {
 	}
 
 	#[test]
-	#[cfg(all(feature = "cli", feature = "wasm"))]
 	fn test_search_whitespace_handling() {
 		// Test that extra whitespace doesn't break search
 		let documents = vec![Document {
@@ -879,7 +848,6 @@ mod tests {
 	}
 
 	#[test]
-	#[cfg(all(feature = "cli", feature = "wasm"))]
 	fn test_search_with_typo() -> Result<(), Box<dyn std::error::Error>> {
 		let document_strings = FsstStrVec::from_strings(&vec![
 			"Document 1",

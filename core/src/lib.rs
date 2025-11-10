@@ -14,7 +14,7 @@ pub struct FsstStrVec {
 
 impl FsstStrVec {
 	/// Train FSST on `strings` and build the compressed vector.
-	#[cfg(feature = "cli")]
+	#[cfg(any(feature = "cli", test))]
 	fn from_strings(strings: &[impl AsRef<str>]) -> Self {
 		// 1) Train a compressor on the corpus.
 		let sample: Vec<&[u8]> = strings.iter().map(|s| s.as_ref().as_bytes()).collect();
@@ -112,7 +112,7 @@ impl Index {
 	}
 }
 
-#[cfg(feature = "cli")]
+#[cfg(any(feature = "cli", test))]
 pub fn build_index(documents: Vec<Document>) -> Result<Index, Box<dyn std::error::Error>> {
 	use std::collections::HashSet;
 
@@ -234,7 +234,7 @@ pub fn build_index(documents: Vec<Document>) -> Result<Index, Box<dyn std::error
 	})
 }
 
-#[cfg(feature = "wasm")]
+#[cfg(any(feature = "wasm", test))]
 pub fn search(
 	index: &Index,
 	query: &str,

@@ -5,9 +5,6 @@ use std::{collections::HashMap, fs::File};
 use wasm_encoder::{ConstExpr, DataSection, MemorySection, MemoryType};
 use wasmparser::{Parser, Payload};
 
-static SEARCH_JS: &[u8] = include_bytes!("../../wasm/pkg/search.js");
-static SEARCH_BG_WASM: &[u8] = include_bytes!("../../wasm/pkg/search_bg.wasm");
-
 #[derive(Debug)]
 enum WasmDataSegment {
 	Passive(Vec<u8>),
@@ -103,7 +100,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 	let mut index_len_global_index: Option<u32> = None;
 	let mut i32_globals: HashMap<u32, i32> = HashMap::new();
 
-	for payload in Parser::new(0).parse_all(SEARCH_BG_WASM) {
+	let search_js: &[u8] = include_bytes!("../../wasm/pkg/search.js");
+	let search_bg_wasm: &[u8] = include_bytes!("../../wasm/pkg/search_bg.wasm");
+
+	for payload in Parser::new(0).parse_all(search_bg_wasm) {
 		let payload = payload?;
 
 		// process i32 const data sections differently
@@ -152,7 +152,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 			if let Some((id, data)) = payload.as_section() {
 				sections.push(WasmSection::Raw {
 					id,
-					data: SEARCH_BG_WASM[data.start..data.end].to_vec(),
+					data: search_bg_wasm[data.start..data.end].to_vec(),
 				});
 			}
 
@@ -287,7 +287,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 	std::fs::create_dir_all(output_dir)?;
 
 	let mut output_js = File::create(output_dir.join("search.js"))?;
-	output_js.write_all(SEARCH_JS)?;
+	output_js.write_all(search_js)?;
 
 	let mut output_wasm = File::create(output_dir.join("search_bg.wasm"))?;
 	output_wasm.write_all(&wasm_bytes)?;

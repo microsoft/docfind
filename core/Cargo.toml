@@ -16,3 +16,7 @@ serde_json = "1.0.145"
 [features]
 cli = ["rake"]
 wasm = []
+
+[dev-dependencies.rake]
+version = "0.3"
+

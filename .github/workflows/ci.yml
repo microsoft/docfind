@@ -1,4 +1,4 @@
-name: Tests
+name: CI
 
 on:
   push:
@@ -18,3 +18,4 @@ jobs:
 
     - name: Test
       run: cargo test
+      working-directory: core

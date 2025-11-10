@@ -28,10 +28,14 @@ Prepare a JSON file with your documents:
     "title": "Getting Started",
     "category": "docs",
     "href": "/docs/getting-started",
-    "body": "This guide will help you get started...",
-    "keywords": ["tutorial", "introduction", "setup"]
-  },
-  ...
+    "body": "This guide will help you get started."
+    },
+    {
+    "title": "API Reference",
+    "category": "reference",
+    "href": "/docs/api",
+    "body": "Complete API documentation for all search functions and configuration options."
+    }
 ]
 ```
 

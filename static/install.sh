@@ -1,0 +1,172 @@
+#!/bin/sh
+# docfind installer script for Unix-like systems
+# Usage: curl -fsSL https://microsoft.github.io/docfind/install.sh | sh
+
+set -e
+
+# Configuration
+REPO="microsoft/docfind"
+BINARY_NAME="docfind"
+INSTALL_DIR="${DOCFIND_INSTALL_DIR:-$HOME/.local/bin}"
+
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m' # No Color
+
+# Helper functions
+info() {
+    printf "${GREEN}==>${NC} %s\n" "$1"
+}
+
+warn() {
+    printf "${YELLOW}Warning:${NC} %s\n" "$1"
+}
+
+error() {
+    printf "${RED}Error:${NC} %s\n" "$1" >&2
+    exit 1
+}
+
+# Detect OS and architecture
+detect_platform() {
+    OS="$(uname -s)"
+    ARCH="$(uname -m)"
+    
+    case "$OS" in
+        Linux*)
+            PLATFORM="unknown-linux-musl"
+            ;;
+        Darwin*)
+            PLATFORM="apple-darwin"
+            ;;
+        *)
+            error "Unsupported operating system: $OS"
+            ;;
+    esac
+    
+    case "$ARCH" in
+        x86_64|amd64)
+            ARCH="x86_64"
+            ;;
+        aarch64|arm64)
+            ARCH="aarch64"
+            ;;
+        *)
+            error "Unsupported architecture: $ARCH"
+            ;;
+    esac
+    
+    TARGET="${ARCH}-${PLATFORM}"
+    info "Detected platform: $TARGET"
+}
+
+# Get the latest release version
+get_latest_version() {
+    info "Fetching latest release..."
+    
+    if command -v curl >/dev/null 2>&1; then
+        VERSION=$(curl -fsSL "https://api.github.com/repos/$REPO/releases/latest" | grep '"tag_name"' | sed -E 's/.*"([^"]+)".*/\1/')
+    elif command -v wget >/dev/null 2>&1; then
+        VERSION=$(wget -qO- "https://api.github.com/repos/$REPO/releases/latest" | grep '"tag_name"' | sed -E 's/.*"([^"]+)".*/\1/')
+    else
+        error "Neither curl nor wget found. Please install one of them."
+    fi
+    
+    if [ -z "$VERSION" ]; then
+        error "Failed to fetch latest version"
+    fi
+    
+    info "Latest version: $VERSION"
+}
+
+# Download and install binary
+install_binary() {
+    DOWNLOAD_URL="https://github.com/$REPO/releases/download/$VERSION/${BINARY_NAME}-${TARGET}"
+    TEMP_FILE="/tmp/${BINARY_NAME}-${TARGET}"
+    
+    info "Downloading from $DOWNLOAD_URL..."
+    
+    if command -v curl >/dev/null 2>&1; then
+        curl -fsSL "$DOWNLOAD_URL" -o "$TEMP_FILE" || error "Download failed"
+    elif command -v wget >/dev/null 2>&1; then
+        wget -q "$DOWNLOAD_URL" -O "$TEMP_FILE" || error "Download failed"
+    fi
+    
+    # Create install directory if it doesn't exist
+    if [ ! -d "$INSTALL_DIR" ]; then
+        info "Creating directory $INSTALL_DIR..."
+        mkdir -p "$INSTALL_DIR" || error "Failed to create install directory"
+    fi
+    
+    # Install binary
+    info "Installing to $INSTALL_DIR/$BINARY_NAME..."
+    mv "$TEMP_FILE" "$INSTALL_DIR/$BINARY_NAME" || error "Failed to install binary"
+    chmod +x "$INSTALL_DIR/$BINARY_NAME" || error "Failed to make binary executable"
+    
+    info "Successfully installed $BINARY_NAME to $INSTALL_DIR"
+}
+
+# Check if install directory is in PATH
+check_path() {
+    case ":$PATH:" in
+        *":$INSTALL_DIR:"*)
+            return 0
+            ;;
+        *)
+            return 1
+            ;;
+    esac
+}
+
+# Print post-install instructions
+post_install() {
+    echo ""
+    info "Installation complete!"
+    
+    if ! check_path; then
+        warn "$INSTALL_DIR is not in your PATH"
+        echo ""
+        echo "Add it to your PATH by adding this line to your shell profile:"
+        echo "  ${GREEN}export PATH=\"\$PATH:$INSTALL_DIR\"${NC}"
+        echo ""
+        
+        # Detect shell and provide specific instructions
+        SHELL_NAME="$(basename "$SHELL")"
+        case "$SHELL_NAME" in
+            bash)
+                echo "For bash, add it to ~/.bashrc or ~/.bash_profile"
+                ;;
+            zsh)
+                echo "For zsh, add it to ~/.zshrc"
+                ;;
+            fish)
+                echo "For fish, run: ${GREEN}fish_add_path $INSTALL_DIR${NC}"
+                ;;
+            *)
+                echo "Add it to your shell's configuration file"
+                ;;
+        esac
+        echo ""
+        echo "Then reload your shell or run: ${GREEN}source ~/.${SHELL_NAME}rc${NC}"
+    else
+        echo "You can now use '${GREEN}$BINARY_NAME${NC}' from anywhere!"
+    fi
+    
+    echo ""
+    echo "Try it out:"
+    echo "  ${GREEN}$BINARY_NAME --help${NC}"
+}
+
+# Main installation flow
+main() {
+    info "Installing $BINARY_NAME..."
+    
+    detect_platform
+    get_latest_version
+    install_binary
+    post_install
+}
+
+main

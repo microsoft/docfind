@@ -10,13 +10,47 @@ A high-performance document search engine built in Rust with WebAssembly support
 - **WebAssembly Ready**: Compile to WASM for browser-based search with no server required
 - **Standalone CLI Tool**: Self-contained CLI tool to build a .wasm file out of a collection of documents, no Rust tooling required
 
-## Usage
+## Installation
 
-### Building the CLI
+### Quick Install
+
+**macOS/Linux:**
+```bash
+curl -fsSL https://microsoft.github.io/docfind/install.sh | sh
+```
+
+**Windows (PowerShell):**
+```powershell
+irm https://microsoft.github.io/docfind/install.ps1 | iex
+```
+
+The installer will:
+- Download the latest release binary for your platform
+- Install it to `~/.local/bin` (Unix) or `~\.docfind\bin` (Windows)
+- Provide instructions for adding it to your PATH if needed
+
+### Manual Installation
+
+Download the binary for your platform from the [latest release](https://github.com/microsoft/docfind/releases/latest):
+
+- **macOS (Intel)**: `docfind-x86_64-apple-darwin`
+- **macOS (Apple Silicon)**: `docfind-aarch64-apple-darwin`
+- **Linux (x64)**: `docfind-x86_64-unknown-linux-musl`
+- **Linux (ARM64)**: `docfind-aarch64-unknown-linux-musl`
+- **Windows (x64)**: `docfind-x86_64-pc-windows-msvc.exe`
+- **Windows (ARM64)**: `docfind-aarch64-pc-windows-msvc.exe`
+
+Rename it to `docfind` (or `docfind.exe` on Windows), make it executable, and place it in your PATH.
+
+### Building from Source
 
 ```bash
 ./build.sh
 ```
+
+The compiled binary will be available at `./target/release/cli`.
+
+## Usage
 
 ### Creating a Search Index
 
@@ -42,7 +76,7 @@ Prepare a JSON file with your documents:
 Build the index and generate a WASM module:
 
 ```bash
-./target/release/cli documents.json output/
+docfind documents.json output
 ```
 
 This creates:

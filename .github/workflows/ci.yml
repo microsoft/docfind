@@ -81,6 +81,7 @@ jobs:
       run: cargo build --release -p docfind --target ${{ matrix.target }}
       env:
         CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER: aarch64-linux-gnu-gcc
+        CARGO_TARGET_AARCH64_UNKNOWN_LINUX_MUSL_LINKER: aarch64-linux-gnu-gcc
     
     - name: Package binaries (Unix)
       if: runner.os != 'Windows'

@@ -17,9 +17,9 @@ pub static mut INDEX_LEN: u32 = 0xdead_beef;
 static INDEX: OnceLock<Index> = OnceLock::new();
 
 /// Search the index for a query string
-/// Returns a JSON string containing an array of matching documents
+/// Returns a JavaScript array of matching documents
 #[wasm_bindgen]
-pub fn search(query: &str, max_results: Option<usize>) -> Result<String, JsValue> {
+pub fn search(query: &str, max_results: Option<usize>) -> Result<JsValue, JsValue> {
 	let index = INDEX.get_or_init(|| {
 		let raw_index =
 			unsafe { std::slice::from_raw_parts(INDEX_BASE as *const u8, INDEX_LEN as usize) };
@@ -29,7 +29,6 @@ pub fn search(query: &str, max_results: Option<usize>) -> Result<String, JsValue
 	let result = docfind_core::search(index, query, max_results.unwrap_or(10))
 		.map_err(|e| JsValue::from_str(&format!("Search failed: {}", e)))?;
 
-	// TODO: can we return this as a JS object directly instead of serializing to JSON?
-	serde_json::to_string(&result)
-		.map_err(|e| JsValue::from_str(&format!("Failed to serialize results: {}", e)))
+	serde_wasm_bindgen::to_value(&result)
+		.map_err(|e| JsValue::from_str(&format!("Failed to convert results to JS: {}", e)))
 }

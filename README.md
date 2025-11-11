@@ -91,8 +91,7 @@ This creates:
   
   await init();
   
-  const results = search('needle');
-  const documents = JSON.parse(results);
+  const documents = search('needle');
   
   console.log(documents);
 </script>
@@ -119,7 +118,7 @@ This creates:
    - Performs fuzzy matching using Levenshtein automaton
    - Combines results from multiple keywords with score accumulation
    - Decompresses matching document strings on demand
-   - Returns ranked results as JSON
+   - Returns ranked results as JavaScript objects
 
 ## Dependencies
 

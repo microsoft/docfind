@@ -83,8 +83,8 @@ get_latest_version() {
 
 # Download and install binary
 install_binary() {
-    DOWNLOAD_URL="https://github.com/$REPO/releases/download/$VERSION/${BINARY_NAME}-${TARGET}"
-    TEMP_FILE="/tmp/${BINARY_NAME}-${TARGET}"
+    DOWNLOAD_URL="https://github.com/$REPO/releases/download/$VERSION/${BINARY_NAME}-${TARGET}.tar.gz"
+    TEMP_FILE="/tmp/${BINARY_NAME}-${TARGET}.tar.gz"
     
     info "Downloading from $DOWNLOAD_URL..."
     
@@ -100,10 +100,15 @@ install_binary() {
         mkdir -p "$INSTALL_DIR" || error "Failed to create install directory"
     fi
     
-    # Install binary
+    # Extract and install binary
+    info "Extracting archive..."
+    tar -xzf "$TEMP_FILE" -C "$INSTALL_DIR" || error "Failed to extract archive"
+    
     info "Installing to $INSTALL_DIR/$BINARY_NAME..."
-    mv "$TEMP_FILE" "$INSTALL_DIR/$BINARY_NAME" || error "Failed to install binary"
     chmod +x "$INSTALL_DIR/$BINARY_NAME" || error "Failed to make binary executable"
+    
+    # Clean up
+    rm "$TEMP_FILE" 2>/dev/null || true
     
     info "Successfully installed $BINARY_NAME to $INSTALL_DIR"
 }

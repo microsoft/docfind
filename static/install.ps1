@@ -65,9 +65,10 @@ function Install-Binary {
         [string]$Target
     )
     
-    $fileName = "${BinaryName}-${Target}.exe"
+    $fileName = "${BinaryName}-${Target}.zip"
     $downloadUrl = "https://github.com/$Repo/releases/download/$Version/$fileName"
     $tempFile = Join-Path $env:TEMP $fileName
+    $tempExtractDir = Join-Path $env:TEMP "docfind-extract"
     
     Write-Info "Downloading from $downloadUrl..."
     
@@ -84,15 +85,40 @@ function Install-Binary {
         New-Item -ItemType Directory -Path $InstallDir -Force | Out-Null
     }
     
+    # Extract archive
+    Write-Info "Extracting archive..."
+    try {
+        # Clean up temp extract directory if it exists
+        if (Test-Path $tempExtractDir) {
+            Remove-Item -Path $tempExtractDir -Recurse -Force
+        }
+        New-Item -ItemType Directory -Path $tempExtractDir -Force | Out-Null
+        
+        Expand-Archive -Path $tempFile -DestinationPath $tempExtractDir -Force
+    }
+    catch {
+        Write-Error-Custom "Failed to extract archive: $_"
+    }
+    
     # Install binary
     $destination = Join-Path $InstallDir "${BinaryName}.exe"
+    $extractedBinary = Join-Path $tempExtractDir "${BinaryName}.exe"
     Write-Info "Installing to $destination..."
     
     try {
-        Move-Item -Path $tempFile -Destination $destination -Force
+        Move-Item -Path $extractedBinary -Destination $destination -Force
     }
     catch {
         Write-Error-Custom "Failed to install binary: $_"
+    }
+    
+    # Clean up
+    try {
+        Remove-Item -Path $tempFile -Force -ErrorAction SilentlyContinue
+        Remove-Item -Path $tempExtractDir -Recurse -Force -ErrorAction SilentlyContinue
+    }
+    catch {
+        # Ignore cleanup errors
     }
     
     Write-Info "Successfully installed $BinaryName to $InstallDir"

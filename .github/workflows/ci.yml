@@ -80,7 +80,7 @@ jobs:
       run: wasm-pack build wasm --out-name docfind --release --target web
     
     - name: Minify JavaScript
-      run: npx --yes esbuild --bundle wasm/pkg/docfind.js --format=esm --minify --outfile=wasm/pkg/docfind.js --allow-overwrite
+      run: npx --yes esbuild --bundle wasm/index.js --format=esm --minify --outfile=wasm/pkg/docfind.js --allow-overwrite
     
     - name: Build CLI
       run: cargo build --release -p docfind --target ${{ matrix.target }}

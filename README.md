@@ -93,7 +93,7 @@ docfind documents.json output
 
 This creates:
 - `output/docfind.js` - JavaScript bindings
-- `output/docfind.wasm` - WebAssembly module with embedded index
+- `output/docfind_bg.wasm` - WebAssembly module with embedded index
 
 ### Using in the Browser
 

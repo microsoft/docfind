@@ -289,7 +289,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 	let mut output_js = File::create(output_dir.join("docfind.js"))?;
 	output_js.write_all(docfind_js)?;
 
-	let mut output_wasm = File::create(output_dir.join("docfind.wasm"))?;
+	let mut output_wasm = File::create(output_dir.join("docfind_bg.wasm"))?;
 	output_wasm.write_all(&wasm_bytes)?;
 
 	let duration = start.elapsed();

@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>docfind - Fast Document Search Demo</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+            padding: 20px 0;
+        }
+
+        h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            font-size: 1.2em;
+            opacity: 0.9;
+            margin-bottom: 20px;
+        }
+
+        .metrics {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .metric {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 10px 20px;
+            border-radius: 8px;
+            backdrop-filter: blur(10px);
+        }
+
+        .metric-label {
+            font-size: 0.85em;
+            opacity: 0.9;
+        }
+
+        .metric-value {
+            font-size: 1.3em;
+            font-weight: 700;
+        }
+
+        .search-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .search-box {
+            position: relative;
+            margin-bottom: 15px;
+        }
+
+        input[type="search"] {
+            width: 100%;
+            padding: 16px 20px;
+            font-size: 1.1em;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        input[type="search"]:focus {
+            border-color: #667eea;
+        }
+
+        .search-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #666;
+            font-size: 0.9em;
+            margin-top: 10px;
+        }
+
+        .loading {
+            color: #667eea;
+            font-weight: 500;
+        }
+
+        .results-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 30px;
+            min-height: 200px;
+        }
+
+        .result-item {
+            padding: 20px;
+            border-bottom: 1px solid #f0f0f0;
+            transition: background-color 0.2s;
+        }
+
+        .result-item:last-child {
+            border-bottom: none;
+        }
+
+        .result-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        .result-title {
+            font-size: 1.2em;
+            font-weight: 600;
+            color: #667eea;
+            margin-bottom: 8px;
+        }
+
+        .result-category {
+            display: inline-block;
+            background: #e3e8ff;
+            color: #667eea;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .result-body {
+            color: #555;
+            line-height: 1.6;
+            margin-top: 8px;
+        }
+
+        .result-score {
+            font-size: 0.85em;
+            color: #999;
+            margin-top: 8px;
+        }
+
+        .no-results {
+            text-align: center;
+            color: #999;
+            padding: 40px 20px;
+        }
+
+        .no-results-icon {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+
+        .error {
+            background: #fee;
+            color: #c33;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        footer {
+            text-align: center;
+            color: white;
+            margin-top: 40px;
+            opacity: 0.9;
+        }
+
+        footer a {
+            color: white;
+            text-decoration: underline;
+        }
+
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 2em;
+            }
+            
+            .metrics {
+                gap: 15px;
+            }
+            
+            .search-container,
+            .results-container {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔍 docfind</h1>
+            <div class="subtitle">Fast, Fuzzy Document Search with WebAssembly</div>
+            <div class="metrics" id="metrics">
+                <div class="metric">
+                    <div class="metric-label">Documents</div>
+                    <div class="metric-value" id="doc-count">-</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-label">Build Time</div>
+                    <div class="metric-value" id="build-time">-</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-label">WASM Size</div>
+                    <div class="metric-value" id="wasm-size">-</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-label">Compressed</div>
+                    <div class="metric-value" id="compressed-size">-</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-label">Load Time</div>
+                    <div class="metric-value" id="load-time">-</div>
+                </div>
+            </div>
+        </header>
+
+        <div class="search-container">
+            <div class="search-box">
+                <input 
+                    type="search" 
+                    id="search-input" 
+                    placeholder="Search the AG News dataset... Try 'sports', 'technology', 'business'..."
+                    autocomplete="off"
+                >
+            </div>
+            <div class="search-info">
+                <span id="result-count"></span>
+                <span id="search-time"></span>
+            </div>
+        </div>
+
+        <div class="results-container">
+            <div id="results"></div>
+        </div>
+
+        <footer>
+            <p>
+                Powered by <a href="https://github.com/microsoft/docfind" target="_blank">docfind</a> - 
+                A high-performance document search engine built with Rust and WebAssembly
+            </p>
+            <p style="margin-top: 10px; font-size: 0.9em;">
+                Dataset: AG News Classification Dataset
+            </p>
+        </footer>
+    </div>
+
+    <script type="module">
+        import init, { search } from './docfind.js';
+
+        let searchModule;
+        let isReady = false;
+        const startTime = performance.now();
+
+        // Initialize WASM module
+        async function initSearch() {
+            try {
+                searchModule = await init();
+                const loadTime = (performance.now() - startTime).toFixed(0);
+                document.getElementById('load-time').textContent = `${loadTime}ms`;
+                isReady = true;
+                
+                // Fetch and display metrics
+                fetchMetrics();
+                
+                // Show welcome message
+                showWelcomeMessage();
+                
+                // Enable search
+                document.getElementById('search-input').disabled = false;
+            } catch (error) {
+                showError('Failed to initialize search: ' + error.message);
+            }
+        }
+
+        async function fetchMetrics() {
+            try {
+                const response = await fetch('./metrics.json');
+                if (response.ok) {
+                    const metrics = await response.json();
+                    document.getElementById('doc-count').textContent = metrics.document_count || '-';
+                    document.getElementById('build-time').textContent = metrics.build_time || '-';
+                    document.getElementById('wasm-size').textContent = metrics.wasm_size || '-';
+                    document.getElementById('compressed-size').textContent = metrics.compressed_size || '-';
+                }
+            } catch (error) {
+                console.warn('Could not load metrics:', error);
+            }
+        }
+
+        function showWelcomeMessage() {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = `
+                <div style="text-align: center; padding: 40px 20px; color: #666;">
+                    <div style="font-size: 3em; margin-bottom: 20px;">👋</div>
+                    <h2 style="margin-bottom: 15px; color: #333;">Welcome to docfind!</h2>
+                    <p style="max-width: 500px; margin: 0 auto; line-height: 1.6;">
+                        This demo searches through thousands of news articles from the AG News dataset.
+                        Try searching for topics like "sports", "technology", "business", or "world news".
+                    </p>
+                    <p style="margin-top: 20px; font-size: 0.9em; color: #999;">
+                        The entire search index is running in your browser with WebAssembly - no server requests needed!
+                    </p>
+                </div>
+            `;
+        }
+
+        function showError(message) {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = `<div class="error">${message}</div>`;
+        }
+
+        function performSearch(query) {
+            if (!isReady) {
+                document.getElementById('result-count').textContent = 'Initializing...';
+                return;
+            }
+
+            if (!query.trim()) {
+                showWelcomeMessage();
+                document.getElementById('result-count').textContent = '';
+                document.getElementById('search-time').textContent = '';
+                return;
+            }
+
+            const searchStart = performance.now();
+            
+            try {
+                const results = search(query, 50);
+                const searchTime = (performance.now() - searchStart).toFixed(2);
+                
+                displayResults(results, query, searchTime);
+            } catch (error) {
+                showError('Search failed: ' + error.message);
+            }
+        }
+
+        function displayResults(results, query, searchTime) {
+            const resultsDiv = document.getElementById('results');
+            const resultCount = document.getElementById('result-count');
+            const searchTimeSpan = document.getElementById('search-time');
+
+            resultCount.textContent = `${results.length} result${results.length !== 1 ? 's' : ''}`;
+            searchTimeSpan.innerHTML = `<span class="loading">⚡ ${searchTime}ms</span>`;
+
+            if (results.length === 0) {
+                resultsDiv.innerHTML = `
+                    <div class="no-results">
+                        <div class="no-results-icon">🔍</div>
+                        <div>No results found for "${escapeHtml(query)}"</div>
+                        <div style="margin-top: 10px; font-size: 0.9em;">Try different keywords or check your spelling</div>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '';
+            results.forEach((result, index) => {
+                const scoreDisplay = (result.score !== undefined && result.score !== null) 
+                    ? `<div class="result-score">Relevance: ${result.score.toFixed(2)}</div>`
+                    : '';
+                
+                html += `
+                    <div class="result-item">
+                        <div class="result-category">${escapeHtml(result.category || 'Uncategorized')}</div>
+                        <div class="result-title">${highlightQuery(escapeHtml(result.title), query)}</div>
+                        <div class="result-body">${highlightQuery(escapeHtml(truncate(result.body, 250)), query)}</div>
+                        ${scoreDisplay}
+                    </div>
+                `;
+            });
+
+            resultsDiv.innerHTML = html;
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function highlightQuery(text, query) {
+            if (!query.trim()) return text;
+            
+            const words = query.toLowerCase().split(/\s+/).filter(w => w.length > 2);
+            let highlighted = text;
+            
+            words.forEach(word => {
+                const regex = new RegExp(`(${word})`, 'gi');
+                highlighted = highlighted.replace(regex, '<strong style="background-color: #fff3cd; font-weight: 600;">$1</strong>');
+            });
+            
+            return highlighted;
+        }
+
+        function truncate(text, maxLength) {
+            if (text.length <= maxLength) return text;
+            return text.substring(0, maxLength).trim() + '...';
+        }
+
+        // Set up event listeners
+        const searchInput = document.getElementById('search-input');
+        searchInput.disabled = true; // Disable until ready
+        
+        let searchTimeout;
+        searchInput.addEventListener('input', (e) => {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                performSearch(e.target.value);
+            }, 300); // Debounce search
+        });
+
+        // Initialize on load
+        initSearch();
+    </script>
+</body>
+</html>

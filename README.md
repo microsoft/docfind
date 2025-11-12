@@ -149,3 +149,23 @@ The combination of FST and FSST provides:
 - 60-80% compression ratio for document storage
 - Instant startup with lazy index loading
 - Zero network requests after initial load
+
+## References
+
+### Prior Art
+
+This project builds on the rich ecosystem of search technologies:
+
+- **[Algolia](https://www.algolia.com/)** - Server-side search-as-a-service platform
+- **[TypeSense](https://typesense.org/)** - Open-source server-side search engine
+- **[Lunr.js](https://lunrjs.com/)** - Client-side full-text search library for JavaScript
+- **[Stork Search](https://stork-search.net/)** - WebAssembly-powered search for static sites
+- **[Tinysearch](https://endler.dev/2019/tinysearch/)** - Minimalist WASM-based search engine
+
+### Technical Foundations
+
+Key technologies and concepts that inspired and power docfind:
+
+- **[Finite State Transducers](https://burntsushi.net/transducers/)** - Andrew Gallant's comprehensive article on FSTs, the core data structure for efficient search
+- **[RAKE Algorithm](https://docs.rs/rake/latest/rake/)** - Rapid Automatic Keyword Extraction for identifying important phrases
+- **[FSST Compression](https://docs.rs/fsst-rs/latest/fsst/index.html)** - Fast Static Symbol Table compression for efficient text storage

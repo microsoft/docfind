@@ -36,24 +36,12 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Install Rust toolchain
-        uses: actions-rust-lang/setup-rust-toolchain@v1
-        with:
-          toolchain: stable
-
-      - name: Install wasm-pack
-        run: cargo install wasm-pack
-
-      - name: Build docfind from source
+      - name: Install docfind using install script
         run: |
-          # Build WASM template
-          wasm-pack build wasm --out-name docfind --release --target web
-          # Minify JavaScript
-          npx --yes esbuild --bundle wasm/pkg/docfind.js --format=esm --minify --outfile=wasm/pkg/docfind.js --allow-overwrite
-          # Build CLI
-          cargo build --release -p docfind
-          # Make docfind available in PATH
-          echo "${{ github.workspace }}/target/release" >> $GITHUB_PATH
+          # Download and run the install script
+          curl -fsSL https://microsoft.github.io/docfind/install.sh | sh
+          # Add to PATH
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
 
       - name: Download and prepare AG News dataset
         run: |

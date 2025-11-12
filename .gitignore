@@ -7,3 +7,6 @@ static/documents.json
 static/search.js
 static/search_bg.wasm
 static/metrics.json
+# Python cache
+__pycache__/
+*.pyc

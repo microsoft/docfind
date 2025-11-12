@@ -4,7 +4,7 @@ A high-performance document search engine built in Rust with WebAssembly support
 
 ## Live Demo
 
-Check out the [interactive demo](https://microsoft.github.io/docfind/)! The demo showcases docfind searching through 50,000 news articles from the AG News dataset, running entirely in your browser with WebAssembly.
+Check out the [interactive demo](https://microsoft.github.io/docfind/). The demo showcases docfind searching through 50,000 news articles from the AG News dataset, running entirely in your browser with WebAssembly.
 
 **Demo Performance Metrics:**
 - **Dataset**: 50,000 news articles (AG News Classification Dataset)

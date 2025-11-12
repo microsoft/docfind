@@ -47,6 +47,7 @@ jobs:
         run: |
           cd static
           python3 ../scripts/prepare_demo_dataset.py 50000
+          cp ../scripts/documents.json .
           echo "Dataset prepared successfully"
           ls -lh documents.json
 

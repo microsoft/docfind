@@ -80,14 +80,14 @@ docfind documents.json output
 ```
 
 This creates:
-- `output/search.js` - JavaScript bindings
-- `output/search_bg.wasm` - WebAssembly module with embedded index
+- `output/docfind.js` - JavaScript bindings
+- `output/docfind_bg.wasm` - WebAssembly module with embedded index
 
 ### Using in the Browser
 
 ```html
 <script type="module">
-  import init, { search } from './output/search.js';
+  import init, { search } from './output/docfind.js';
   
   await init();
   

@@ -43,7 +43,18 @@ function Get-LatestVersion {
     Write-Info "Fetching latest release..."
     
     try {
-        $response = Invoke-RestMethod -Uri "https://api.github.com/repos/$Repo/releases/latest"
+        # Prepare headers for authentication if GITHUB_TOKEN is set
+        $headers = @{}
+        if ($env:GITHUB_TOKEN) {
+            $headers["Authorization"] = "Bearer $env:GITHUB_TOKEN"
+        }
+        
+        $response = if ($headers.Count -gt 0) {
+            Invoke-RestMethod -Uri "https://api.github.com/repos/$Repo/releases/latest" -Headers $headers
+        } else {
+            Invoke-RestMethod -Uri "https://api.github.com/repos/$Repo/releases/latest"
+        }
+        
         $version = $response.tag_name
         
         if (-not $version) {

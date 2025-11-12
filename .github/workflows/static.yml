@@ -42,6 +42,8 @@ jobs:
           curl -fsSL https://microsoft.github.io/docfind/install.sh | sh
           # Add to PATH
           echo "$HOME/.local/bin" >> $GITHUB_PATH
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Download and prepare AG News dataset
         run: |

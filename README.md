@@ -8,10 +8,11 @@ Check out the [interactive demo](https://microsoft.github.io/docfind/). The demo
 
 **Demo Performance Metrics:**
 - **Dataset**: 50,000 news articles (AG News Classification Dataset)
-- **Index Size**: ~5-8 MB (compressed with Brotli: ~1-2 MB)
-- **Build Time**: Seconds to build the index
-- **Load Time**: 50-200ms (depending on network and browser)
-- **Search Speed**: Sub-millisecond to a few milliseconds per query
+- **Dataset Size**: ~32 MB (uncompressed JSON)
+- **Index Build Time**: ~3 seconds
+- **Index Size**: 6.5 MB WASM file (compressed with Brotli: 1.4 MB)
+- **Load Time**: ~100ms (depending on network and browser)
+- **Search Speed**: ~1-3ms per query
 - **Zero Server Requests**: All search operations run client-side
 
 ## Features
@@ -57,7 +58,7 @@ Rename it to `docfind` (or `docfind.exe` on Windows), make it executable, and pl
 ### Building from Source
 
 ```bash
-./build.sh
+./scripts/build.sh
 ```
 
 The compiled binary will be available at `./target/release/cli`.

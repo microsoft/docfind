@@ -46,7 +46,7 @@ jobs:
       - name: Download and prepare AG News dataset
         run: |
           cd static
-          python3 prepare_dataset.py 50000
+          python3 ../scripts/prepare_demo_dataset.py 50000
           echo "Dataset prepared successfully"
           ls -lh documents.json
 
@@ -68,14 +68,18 @@ jobs:
           # Count documents in the JSON file
           DOC_COUNT=$(python3 -c "import json; print(len(json.load(open('documents.json'))))")
           
+          # Get dataset size
+          DATASET_SIZE=$(stat -f%z documents.json 2>/dev/null || stat -c%s documents.json)
+          DATASET_SIZE_MB=$(echo "scale=1; $DATASET_SIZE / 1024 / 1024" | bc)
+          
           # Get WASM file size
           WASM_SIZE=$(stat -f%z docfind.wasm 2>/dev/null || stat -c%s docfind.wasm)
-          WASM_SIZE_MB=$(echo "scale=2; $WASM_SIZE / 1024 / 1024" | bc)
+          WASM_SIZE_MB=$(echo "scale=1; $WASM_SIZE / 1024 / 1024" | bc)
           
           # Compress with brotli to measure compressed size
           brotli -c docfind.wasm > docfind.wasm.br
           COMPRESSED_SIZE=$(stat -f%z docfind.wasm.br 2>/dev/null || stat -c%s docfind.wasm.br)
-          COMPRESSED_SIZE_MB=$(echo "scale=2; $COMPRESSED_SIZE / 1024 / 1024" | bc)
+          COMPRESSED_SIZE_MB=$(echo "scale=1; $COMPRESSED_SIZE / 1024 / 1024" | bc)
           
           # Calculate compression ratio
           COMPRESSION_RATIO=$(echo "scale=1; 100 - ($COMPRESSED_SIZE * 100 / $WASM_SIZE)" | bc)
@@ -100,6 +104,7 @@ jobs:
           
           echo "=== Build Metrics ==="
           echo "Documents indexed: $DOC_COUNT"
+          echo "Dataset size: ${DATASET_SIZE_MB} MB"
           echo "Index build time: $BUILD_TIME_DISPLAY"
           echo "WASM size: ${WASM_SIZE_MB} MB"
           echo "Brotli compressed: ${COMPRESSED_SIZE_MB} MB"
@@ -111,8 +116,6 @@ jobs:
           cd static
           # Remove dataset files to reduce deployment size
           rm -f train.csv test.csv documents.json docfind.wasm.br
-          # Remove build-time files not needed for the demo
-          rm -f prepare_dataset.py README.md
 
       - name: Setup Pages
         uses: actions/configure-pages@v5

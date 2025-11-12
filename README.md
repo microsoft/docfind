@@ -100,12 +100,9 @@ This creates:
 
 ```html
 <script type="module">
-  import init, { search } from './output/docfind.js';
+  import search from './output/docfind.js';
   
-  await init();
-  
-  const documents = search('needle');
-  
+  const documents = await search('needle');
   console.log(documents);
 </script>
 ```

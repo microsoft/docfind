@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -197,11 +198,11 @@
             h1 {
                 font-size: 2em;
             }
-            
+
             .metrics {
                 gap: 15px;
             }
-            
+
             .search-container,
             .results-container {
                 padding: 20px;
@@ -209,6 +210,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <header>
@@ -240,12 +242,9 @@
 
         <div class="search-container">
             <div class="search-box">
-                <input 
-                    type="search" 
-                    id="search-input" 
+                <input type="search" id="search-input"
                     placeholder="Search the AG News dataset... Try 'sports', 'technology', 'business'..."
-                    autocomplete="off"
-                >
+                    autocomplete="off">
             </div>
             <div class="search-info">
                 <span id="result-count"></span>
@@ -259,7 +258,7 @@
 
         <footer>
             <p>
-                Powered by <a href="https://github.com/microsoft/docfind" target="_blank">docfind</a> - 
+                Powered by <a href="https://github.com/microsoft/docfind" target="_blank">docfind</a> -
                 A high-performance document search engine built with Rust and WebAssembly
             </p>
             <p style="margin-top: 10px; font-size: 0.9em;">
@@ -269,31 +268,22 @@
     </div>
 
     <script type="module">
-        import init, { search } from './docfind.js';
+        import search from './docfind.js';
 
-        let searchModule;
         let isReady = false;
         const startTime = performance.now();
 
-        // Initialize WASM module
+        // Initialize on first use
         async function initSearch() {
-            try {
-                searchModule = await init();
-                const loadTime = (performance.now() - startTime).toFixed(0);
-                document.getElementById('load-time').textContent = `${loadTime}ms`;
-                isReady = true;
-                
-                // Fetch and display metrics
-                fetchMetrics();
-                
-                // Show welcome message
-                showWelcomeMessage();
-                
-                // Enable search
-                document.getElementById('search-input').disabled = false;
-            } catch (error) {
-                showError('Failed to initialize search: ' + error.message);
-            }
+            // Fetch and display metrics
+            fetchMetrics();
+
+            // Show welcome message
+            showWelcomeMessage();
+
+            // Enable search
+            document.getElementById('search-input').disabled = false;
+            isReady = true;
         }
 
         async function fetchMetrics() {
@@ -333,7 +323,7 @@
             resultsDiv.innerHTML = `<div class="error">${message}</div>`;
         }
 
-        function performSearch(query) {
+        async function performSearch(query) {
             if (!isReady) {
                 document.getElementById('result-count').textContent = 'Initializing...';
                 return;
@@ -347,11 +337,17 @@
             }
 
             const searchStart = performance.now();
-            
+
             try {
-                const results = search(query, 50);
+                const results = await search(query, 50);
                 const searchTime = (performance.now() - searchStart).toFixed(2);
-                
+
+                // Update load time on first search
+                if (searchStart < 5000) {
+                    const loadTime = (searchStart - startTime).toFixed(0);
+                    document.getElementById('load-time').textContent = `${loadTime}ms`;
+                }
+
                 displayResults(results, query, searchTime);
             } catch (error) {
                 showError('Search failed: ' + error.message);
@@ -379,10 +375,10 @@
 
             let html = '';
             results.forEach((result, index) => {
-                const scoreDisplay = (result.score !== undefined && result.score !== null) 
+                const scoreDisplay = (result.score !== undefined && result.score !== null)
                     ? `<div class="result-score">Relevance: ${result.score.toFixed(2)}</div>`
                     : '';
-                
+
                 html += `
                     <div class="result-item">
                         <div class="result-category">${escapeHtml(result.category || 'Uncategorized')}</div>
@@ -404,15 +400,15 @@
 
         function highlightQuery(text, query) {
             if (!query.trim()) return text;
-            
+
             const words = query.toLowerCase().split(/\s+/).filter(w => w.length > 2);
             let highlighted = text;
-            
+
             words.forEach(word => {
                 const regex = new RegExp(`(${word})`, 'gi');
                 highlighted = highlighted.replace(regex, '<strong style="background-color: #fff3cd; font-weight: 600;">$1</strong>');
             });
-            
+
             return highlighted;
         }
 
@@ -424,7 +420,7 @@
         // Set up event listeners
         const searchInput = document.getElementById('search-input');
         searchInput.disabled = true; // Disable until ready
-        
+
         let searchTimeout;
         searchInput.addEventListener('input', (e) => {
             clearTimeout(searchTimeout);
@@ -437,4 +433,5 @@
         initSearch();
     </script>
 </body>
+
 </html>

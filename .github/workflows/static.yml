@@ -60,7 +60,7 @@ jobs:
           BUILD_TIME=$((END_TIME - START_TIME))
           echo "BUILD_TIME_MS=$BUILD_TIME" >> $GITHUB_ENV
           echo "Index built successfully in ${BUILD_TIME}ms"
-          ls -lh search.js search_bg.wasm
+          ls -lh docfind.js docfind.wasm
 
       - name: Collect metrics
         run: |
@@ -69,12 +69,12 @@ jobs:
           DOC_COUNT=$(python3 -c "import json; print(len(json.load(open('documents.json'))))")
           
           # Get WASM file size
-          WASM_SIZE=$(stat -f%z search_bg.wasm 2>/dev/null || stat -c%s search_bg.wasm)
+          WASM_SIZE=$(stat -f%z docfind.wasm 2>/dev/null || stat -c%s docfind.wasm)
           WASM_SIZE_MB=$(echo "scale=2; $WASM_SIZE / 1024 / 1024" | bc)
           
           # Compress with brotli to measure compressed size
-          brotli -c search_bg.wasm > search_bg.wasm.br
-          COMPRESSED_SIZE=$(stat -f%z search_bg.wasm.br 2>/dev/null || stat -c%s search_bg.wasm.br)
+          brotli -c docfind.wasm > docfind.wasm.br
+          COMPRESSED_SIZE=$(stat -f%z docfind.wasm.br 2>/dev/null || stat -c%s docfind.wasm.br)
           COMPRESSED_SIZE_MB=$(echo "scale=2; $COMPRESSED_SIZE / 1024 / 1024" | bc)
           
           # Calculate compression ratio
@@ -110,7 +110,7 @@ jobs:
         run: |
           cd static
           # Remove dataset files to reduce deployment size
-          rm -f train.csv test.csv documents.json search_bg.wasm.br
+          rm -f train.csv test.csv documents.json docfind.wasm.br
 
       - name: Setup Pages
         uses: actions/configure-pages@v5

@@ -286,14 +286,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 	let output_dir = Path::new(output_dir);
 	std::fs::create_dir_all(output_dir)?;
 
-	// Patch the JavaScript to use the correct WASM filename
-	let js_content = std::str::from_utf8(docfind_js)?;
-	let patched_js = js_content.replace("docfind_bg.wasm", "search_bg.wasm");
+	let mut output_js = File::create(output_dir.join("docfind.js"))?;
+	output_js.write_all(docfind_js)?;
 
-	let mut output_js = File::create(output_dir.join("search.js"))?;
-	output_js.write_all(patched_js.as_bytes())?;
-
-	let mut output_wasm = File::create(output_dir.join("search_bg.wasm"))?;
+	let mut output_wasm = File::create(output_dir.join("docfind.wasm"))?;
 	output_wasm.write_all(&wasm_bytes)?;
 
 	let duration = start.elapsed();

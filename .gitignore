@@ -4,8 +4,8 @@ pkg
 static/train.csv
 static/test.csv
 static/documents.json
-static/search.js
-static/search_bg.wasm
+static/docfind.js
+static/docfind.wasm
 static/metrics.json
 # Python cache
 __pycache__/

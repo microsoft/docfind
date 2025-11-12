@@ -1,5 +1,5 @@
-# Simple workflow for deploying static content to GitHub Pages
-name: Deploy static content to Pages
+# Workflow for building and deploying the docfind example to GitHub Pages
+name: Build and deploy example to Pages
 
 on:
   # Runs on pushes targeting the default branch
@@ -22,8 +22,7 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  # Single deploy job since we're just deploying
-  deploy:
+  build-and-deploy:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -31,12 +30,85 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install docfind using install script
+        run: |
+          # Download and run the install script
+          export DOCFIND_INSTALL_DIR="${HOME}/.local/bin"
+          mkdir -p "${DOCFIND_INSTALL_DIR}"
+          curl -fsSL https://microsoft.github.io/docfind/install.sh | sh
+          # Add to PATH
+          echo "${DOCFIND_INSTALL_DIR}" >> $GITHUB_PATH
+
+      - name: Download and prepare AG News dataset
+        run: |
+          cd static
+          python3 prepare_dataset.py 10000
+          echo "Dataset prepared successfully"
+          ls -lh documents.json
+
+      - name: Build search index with docfind
+        run: |
+          cd static
+          # Build the WASM and JS files
+          ~/.local/bin/docfind documents.json .
+          echo "Index built successfully"
+          ls -lh search.js search_bg.wasm
+
+      - name: Collect metrics
+        run: |
+          cd static
+          # Count documents in the JSON file
+          DOC_COUNT=$(python3 -c "import json; print(len(json.load(open('documents.json'))))")
+          
+          # Get WASM file size
+          WASM_SIZE=$(stat -f%z search_bg.wasm 2>/dev/null || stat -c%s search_bg.wasm)
+          WASM_SIZE_MB=$(echo "scale=2; $WASM_SIZE / 1024 / 1024" | bc)
+          
+          # Compress with brotli to measure compressed size
+          brotli -c search_bg.wasm > search_bg.wasm.br
+          COMPRESSED_SIZE=$(stat -f%z search_bg.wasm.br 2>/dev/null || stat -c%s search_bg.wasm.br)
+          COMPRESSED_SIZE_MB=$(echo "scale=2; $COMPRESSED_SIZE / 1024 / 1024" | bc)
+          
+          # Calculate compression ratio
+          COMPRESSION_RATIO=$(echo "scale=1; 100 - ($COMPRESSED_SIZE * 100 / $WASM_SIZE)" | bc)
+          
+          # Create metrics.json for the demo page
+          cat > metrics.json << EOF
+          {
+            "document_count": "$DOC_COUNT",
+            "wasm_size": "${WASM_SIZE_MB} MB",
+            "compressed_size": "${COMPRESSED_SIZE_MB} MB",
+            "compression_ratio": "${COMPRESSION_RATIO}%"
+          }
+          EOF
+          
+          echo "=== Build Metrics ==="
+          echo "Documents indexed: $DOC_COUNT"
+          echo "WASM size: ${WASM_SIZE_MB} MB"
+          echo "Brotli compressed: ${COMPRESSED_SIZE_MB} MB"
+          echo "Compression ratio: ${COMPRESSION_RATIO}%"
+          cat metrics.json
+
+      - name: Clean up temporary files
+        run: |
+          cd static
+          # Remove dataset files to reduce deployment size
+          rm -f train.csv test.csv documents.json search_bg.wasm.br
+
       - name: Setup Pages
         uses: actions/configure-pages@v5
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: 'static'
+
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4

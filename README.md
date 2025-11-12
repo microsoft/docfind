@@ -2,6 +2,17 @@
 
 A high-performance document search engine built in Rust with WebAssembly support. Combines full-text search using FST (Finite State Transducers) with FSST compression for efficient storage and fast fuzzy matching capabilities.
 
+## Live Demo
+
+Check out the [interactive demo](https://microsoft.github.io/docfind/) powered by GitHub Pages! The demo showcases docfind searching through 10,000 news articles from the AG News dataset, running entirely in your browser with WebAssembly.
+
+**Demo Performance Metrics:**
+- **Dataset**: 10,000 news articles (AG News Classification Dataset)
+- **Index Size**: ~2-3 MB (compressed with Brotli: ~500-800 KB)
+- **Load Time**: 10-50ms (depending on network and browser)
+- **Search Speed**: Sub-millisecond to a few milliseconds per query
+- **Zero Server Requests**: All search operations run client-side
+
 ## Features
 
 - **Fast Fuzzy Search**: Uses FST for efficient keyword matching with Levenshtein distance support

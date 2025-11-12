@@ -1,2 +1,9 @@
 target
 pkg
+# Dataset files
+static/train.csv
+static/test.csv
+static/documents.json
+static/search.js
+static/search_bg.wasm
+static/metrics.json

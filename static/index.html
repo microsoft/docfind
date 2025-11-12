@@ -220,6 +220,10 @@
                     <div class="metric-value" id="doc-count">-</div>
                 </div>
                 <div class="metric">
+                    <div class="metric-label">Build Time</div>
+                    <div class="metric-value" id="build-time">-</div>
+                </div>
+                <div class="metric">
                     <div class="metric-label">WASM Size</div>
                     <div class="metric-value" id="wasm-size">-</div>
                 </div>
@@ -298,6 +302,7 @@
                 if (response.ok) {
                     const metrics = await response.json();
                     document.getElementById('doc-count').textContent = metrics.document_count || '-';
+                    document.getElementById('build-time').textContent = metrics.build_time || '-';
                     document.getElementById('wasm-size').textContent = metrics.wasm_size || '-';
                     document.getElementById('compressed-size').textContent = metrics.compressed_size || '-';
                 }

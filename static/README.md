@@ -55,8 +55,8 @@ To test the demo locally:
 The demo is automatically deployed to GitHub Pages when changes are pushed to the `main` branch via the `.github/workflows/static.yml` workflow.
 
 The workflow:
-1. Builds docfind from source (WASM + CLI)
-2. Downloads the AG News dataset (10,000 articles)
+1. Uses install script to download the latest docfind release
+2. Downloads the AG News dataset (50,000 articles)
 3. Converts the dataset to JSON format
 4. Builds the search index
 5. Collects performance metrics
@@ -67,7 +67,7 @@ The workflow:
 To use a different number of documents, edit the workflow file and change:
 
 ```yaml
-python3 prepare_dataset.py 10000  # Change this number
+python3 prepare_dataset.py 50000  # Change this number
 ```
 
 Note: More documents = larger WASM file = longer load times

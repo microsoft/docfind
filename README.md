@@ -4,12 +4,13 @@ A high-performance document search engine built in Rust with WebAssembly support
 
 ## Live Demo
 
-Check out the [interactive demo](https://microsoft.github.io/docfind/)! The demo showcases docfind searching through 10,000 news articles from the AG News dataset, running entirely in your browser with WebAssembly.
+Check out the [interactive demo](https://microsoft.github.io/docfind/)! The demo showcases docfind searching through 50,000 news articles from the AG News dataset, running entirely in your browser with WebAssembly.
 
 **Demo Performance Metrics:**
-- **Dataset**: 10,000 news articles (AG News Classification Dataset)
-- **Index Size**: ~2-3 MB (compressed with Brotli: ~500-800 KB)
-- **Load Time**: 10-50ms (depending on network and browser)
+- **Dataset**: 50,000 news articles (AG News Classification Dataset)
+- **Index Size**: ~5-8 MB (compressed with Brotli: ~1-2 MB)
+- **Build Time**: Seconds to build the index
+- **Load Time**: 50-200ms (depending on network and browser)
 - **Search Speed**: Sub-millisecond to a few milliseconds per query
 - **Zero Server Requests**: All search operations run client-side
 

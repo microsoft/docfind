@@ -46,16 +46,20 @@ jobs:
       - name: Download and prepare AG News dataset
         run: |
           cd static
-          python3 prepare_dataset.py 10000
+          python3 prepare_dataset.py 50000
           echo "Dataset prepared successfully"
           ls -lh documents.json
 
       - name: Build search index with docfind
         run: |
           cd static
-          # Build the WASM and JS files
+          # Build the WASM and JS files and measure time
+          START_TIME=$(date +%s%3N)
           docfind documents.json .
-          echo "Index built successfully"
+          END_TIME=$(date +%s%3N)
+          BUILD_TIME=$((END_TIME - START_TIME))
+          echo "BUILD_TIME_MS=$BUILD_TIME" >> $GITHUB_ENV
+          echo "Index built successfully in ${BUILD_TIME}ms"
           ls -lh search.js search_bg.wasm
 
       - name: Collect metrics
@@ -76,18 +80,27 @@ jobs:
           # Calculate compression ratio
           COMPRESSION_RATIO=$(echo "scale=1; 100 - ($COMPRESSED_SIZE * 100 / $WASM_SIZE)" | bc)
           
+          # Format build time (convert ms to seconds if > 1000ms)
+          BUILD_TIME_DISPLAY="${BUILD_TIME_MS}ms"
+          if [ "$BUILD_TIME_MS" -gt 1000 ]; then
+            BUILD_TIME_SEC=$(echo "scale=2; $BUILD_TIME_MS / 1000" | bc)
+            BUILD_TIME_DISPLAY="${BUILD_TIME_SEC}s"
+          fi
+          
           # Create metrics.json for the demo page
           cat > metrics.json << EOF
           {
             "document_count": "$DOC_COUNT",
             "wasm_size": "${WASM_SIZE_MB} MB",
             "compressed_size": "${COMPRESSED_SIZE_MB} MB",
-            "compression_ratio": "${COMPRESSION_RATIO}%"
+            "compression_ratio": "${COMPRESSION_RATIO}%",
+            "build_time": "$BUILD_TIME_DISPLAY"
           }
           EOF
           
           echo "=== Build Metrics ==="
           echo "Documents indexed: $DOC_COUNT"
+          echo "Index build time: $BUILD_TIME_DISPLAY"
           echo "WASM size: ${WASM_SIZE_MB} MB"
           echo "Brotli compressed: ${COMPRESSED_SIZE_MB} MB"
           echo "Compression ratio: ${COMPRESSION_RATIO}%"

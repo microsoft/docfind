@@ -112,6 +112,53 @@ This creates:
 
 ## How It Works
 
+```mermaid
+flowchart TD
+    A[User creates documents.json] --> B[User invokes docfind CLI]
+    B --> C{docfind Processing}
+    
+    C --> D[Keyword Extraction]
+    D --> D1[RAKE algorithm extracts keywords]
+    D1 --> D2[Assigns relevance scores]
+    
+    C --> E[Build FST Map]
+    E --> E1[Keywords → document indices]
+    E1 --> E2[Enables fuzzy search via Levenshtein]
+    
+    C --> F[FSST Compression]
+    F --> F1[Compress document strings]
+    F1 --> F2[Store in array]
+    
+    D2 --> G[Create Index]
+    E2 --> G
+    F2 --> G
+    
+    G --> H[Serialize with Postcard]
+    H --> I[Embed index in WASM]
+    I --> I1[Parse pre-compiled WASM]
+    I1 --> I2[Expand WASM memory]
+    I2 --> I3[Patch global variables]
+    I3 --> I4[Add index as data segment]
+    
+    I4 --> J[Output: docfind_bg.wasm]
+    I4 --> K[Output: docfind.js]
+    
+    J --> L[Browser Usage]
+    K --> L
+    
+    L --> M[Search Function]
+    M --> M1[Deserialize index]
+    M1 --> M2[Fuzzy match with Levenshtein]
+    M2 --> M3[Score accumulation]
+    M3 --> M4[Decompress results]
+    M4 --> N[Return ranked documents]
+    
+    style A fill:#e1f5ff
+    style J fill:#c3f0c3
+    style K fill:#c3f0c3
+    style N fill:#ffe1c3
+```
+
 1. **Indexing Phase** (CLI):
    - Extracts keywords from document titles, categories, and bodies
    - Uses RAKE algorithm to identify important multi-word phrases

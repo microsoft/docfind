@@ -111,6 +111,8 @@ jobs:
           cd static
           # Remove dataset files to reduce deployment size
           rm -f train.csv test.csv documents.json docfind.wasm.br
+          # Remove build-time files not needed for the demo
+          rm -f prepare_dataset.py README.md
 
       - name: Setup Pages
         uses: actions/configure-pages@v5

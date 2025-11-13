@@ -26,25 +26,6 @@
             margin: 0 auto;
         }
 
-        header {
-            text-align: center;
-            color: white;
-            margin-bottom: 20px;
-            padding: 10px 0;
-        }
-
-        h1 {
-            font-size: 2em;
-            margin-bottom: 5px;
-            font-weight: 700;
-        }
-
-        .subtitle {
-            font-size: 1em;
-            opacity: 0.9;
-            margin-bottom: 10px;
-        }
-
         .search-container {
             background: white;
             border-radius: 12px;
@@ -174,16 +155,12 @@
 
 <body>
     <div class="container">
-        <header>
-            <h1>🔍 docfind</h1>
-            <div class="subtitle">Fast, Fuzzy Document Search with WebAssembly</div>
-        </header>
 
         <div class="search-container">
             <div class="search-box">
                 <input type="search" id="search-input"
                     placeholder="Search the AG News dataset... Try 'sports', 'technology', 'business'..."
-                    autocomplete="off">
+                    autocomplete="off" autofocus>
             </div>
             <div class="search-info">
                 <span id="result-count"></span>
@@ -197,11 +174,7 @@
 
         <footer>
             <p>
-                Powered by <a href="https://github.com/microsoft/docfind" target="_blank">docfind</a> -
-                A high-performance document search engine built with Rust and WebAssembly
-            </p>
-            <p style="margin-top: 10px; font-size: 0.9em;">
-                Dataset: AG News Classification Dataset
+                Powered by <a href="https://github.com/microsoft/docfind" target="_blank">docfind</a>
             </p>
         </footer>
     </div>
@@ -322,7 +295,7 @@
         function highlightQuery(text, query) {
             if (!query.trim()) return text;
 
-            const words = query.toLowerCase().split(/\s+/).filter(w => w.length > 2);
+            const words = query.toLowerCase().split(/\s+/);
             let highlighted = text;
 
             words.forEach(word => {
@@ -352,11 +325,6 @@
 
         // Initialize on load
         initSearch();
-
-        // Focus input
-        window.onload = () => {
-            searchInput.focus();
-        };
     </script>
 </body>
 

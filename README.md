@@ -114,14 +114,17 @@ This creates:
 
 ```mermaid
 flowchart LR
-    A[documents.json] --> B[docfind]
+    A([documents.json]) --> B[docfind]
     B --> C[Keyword Extraction<br/>RAKE]
-    B --> D[FST Map<br/>keywords → docs]
     B --> E[FSST Compression<br/>document strings]
-    C --> F[Index]
-    D --> F
+    C --> D[FST Map<br/>keywords → docs]
+    D --> F[[Index]]
     E --> F
-    F --> G[docfind_bg.wasm<br/>+ docfind.js]
+    F --> G([docfind_bg.wasm<br/>+ docfind.js])
+    
+    style A fill:#e1f5ff
+    style G fill:#e1f5ff
+    style F fill:#ffffcc
 ```
 
 1. **Indexing Phase** (CLI):

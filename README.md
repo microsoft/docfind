@@ -62,7 +62,7 @@ Rename it to `docfind` (or `docfind.exe` on Windows), make it executable, and pl
 Before building from source, ensure you have the following installed:
 
 1. **Rust** - [rustup.rs](https://rustup.rs/)
-2. **wasm-pack** - [rustwasm.github.io/wasm-pack](https://rustwasm.github.io/wasm-pack/installer/)
+2. **wasm-pack** - [drager.github.io/wasm-pack](https://drager.github.io/wasm-pack/)
 3. **Node.js** - [nodejs.org](https://nodejs.org/) (required for esbuild)
 
 #### Build

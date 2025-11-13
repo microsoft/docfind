@@ -207,19 +207,18 @@
     </div>
 
     <script type="module">
-        import search from './docfind.js';
+        import search, { init } from './docfind.js';
 
         let isReady = false;
 
         // Pre-load the library on startup
         async function initSearch() {
             try {
-                // Pre-initialize the search library by calling it with an empty query
-                await search('', 1);
+                await init();
             } catch (error) {
                 console.warn('Failed to pre-load search library:', error);
             }
-            
+
             // Show welcome message
             showWelcomeMessage();
 
@@ -353,6 +352,11 @@
 
         // Initialize on load
         initSearch();
+
+        // Focus input
+        window.onload = () => {
+            searchInput.focus();
+        };
     </script>
 </body>
 

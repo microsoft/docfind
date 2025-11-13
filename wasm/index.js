@@ -1,10 +1,15 @@
-import init, { search as _search } from './pkg/docfind.js';
+import _init, { search as _search } from './pkg/docfind.js';
 
 let didInit = false;
-export default async function search(needle) {
+
+export function init() {
+  return _init();
+}
+
+export default async function search(needle, maxResults) {
   if (!didInit) {
-    await init();
+    await _init();
     didInit = true;
   }
-  return _search(needle);
+  return _search(needle, maxResults);
 }

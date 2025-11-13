@@ -1,4 +1,6 @@
 use serde::{Deserialize, Serialize};
+
+#[cfg(any(feature = "cli", feature = "wasm", test))]
 use std::collections::HashMap;
 
 /// A minimal FSST-compressed vector of UTF-8 strings with random access.
@@ -292,9 +294,9 @@ pub fn search(
 		}
 	}
 
-	// sort documents by score
+	// sort documents by score (descending), then by document index (ascending) for stable ordering
 	let mut documents: Vec<(usize, u8)> = documents.into_iter().collect();
-	documents.sort_by(|a, b| b.1.cmp(&a.1));
+	documents.sort_by(|a, b| b.1.cmp(&a.1).then_with(|| a.0.cmp(&b.0)));
 	documents.truncate(max_results);
 
 	let mut result: Vec<Document> = Vec::new();

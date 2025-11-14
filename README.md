@@ -8,12 +8,21 @@ Check out the [interactive demo](https://microsoft.github.io/docfind/). The demo
 
 **Demo Performance Metrics:**
 - **Dataset**: 50,000 news articles (AG News Classification Dataset)
-- **Dataset Size**: ~32 MB (uncompressed JSON)
-- **Index Build Time**: ~3 seconds
-- **Index Size**: 6.5 MB WASM file (compressed with Brotli: 1.4 MB)
+- **Dataset Size**: 16.35 MB ([uncompressed JSON](https://github.com/microsoft/docfind/raw/refs/heads/main/static/documents.json))
+- **Index Build Time**: ~1.1 seconds
+- **Index Size**: 10.95 MB ([WASM file](https://github.com/microsoft/docfind/raw/refs/heads/main/static/docfind_bg.wasm))
+- **Compressed Size**: 4.96 MB ([compressed with Brotli](https://github.com/microsoft/docfind/raw/refs/heads/main/static/docfind_bg.wasm.br))
 - **Load Time**: ~100ms (depending on network and browser)
 - **Search Speed**: ~1-3ms per query
 - **Zero Server Requests**: All search operations run client-side
+
+**File Size Comparison:**
+
+| Format | Size (MB) | 0 → 16.35 MB |
+|--------|-----------|--------------|
+| JSON (uncompressed) | 16.35 | ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓ |
+| WASM (optimized) | 10.95 | ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓ |
+| Brotli (compressed) | 4.96 | ▓▓▓▓▓▓▓▓▓▓ |
 
 ## Features
 

@@ -1,0 +1,5 @@
+# Large demo files tracked with Git LFS
+static/docfind.js filter=lfs diff=lfs merge=lfs -text
+static/docfind_bg.wasm filter=lfs diff=lfs merge=lfs -text
+static/docfind_bg.wasm.br filter=lfs diff=lfs merge=lfs -text
+static/documents.json filter=lfs diff=lfs merge=lfs -text

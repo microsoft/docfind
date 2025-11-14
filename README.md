@@ -18,11 +18,11 @@ Check out the [interactive demo](https://microsoft.github.io/docfind/). The demo
 
 **File Size Comparison:**
 
-| Format | Size (MB) | ▓▓▓▓▓▓▓▓▓▓ |
-|--------|-----------|------------|
-| JSON (uncompressed) | 16.35 | ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓ |
-| WASM (optimized) | 10.95 | ▓▓▓▓▓▓▓▓▓▓▓ |
-| Brotli (compressed) | 4.96 | ▓▓▓▓▓ |
+| Format | Size (MB) | 0 → 16.35 MB |
+|--------|-----------|--------------|
+| JSON (uncompressed) | 16.35 | ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓ |
+| WASM (optimized) | 10.95 | ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓ |
+| Brotli (compressed) | 4.96 | ▓▓▓▓▓▓▓▓▓▓ |
 
 ## Features
 

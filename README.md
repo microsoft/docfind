@@ -19,16 +19,9 @@ Check out the [interactive demo](https://microsoft.github.io/docfind/). The demo
 **File Size Comparison:**
 
 ```mermaid
----
-config:
-  themeVariables:
-    xyChart:
-      backgroundColor: "transparent"
----
+%%{init: {'theme':'base'}}%%
 xychart-beta horizontal
-    title "Demo File Sizes (MB)"
     x-axis [JSON, WASM, Brotli]
-    y-axis "Size (MB)" 0 --> 18
     bar [16.35, 10.95, 4.96]
 ```
 

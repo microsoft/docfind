@@ -18,12 +18,11 @@ Check out the [interactive demo](https://microsoft.github.io/docfind/). The demo
 
 **File Size Comparison:**
 
-```mermaid
-%%{init: {'theme':'base'}}%%
-xychart-beta horizontal
-    x-axis [JSON, WASM, Brotli]
-    bar [16.35, 10.95, 4.96]
-```
+| Format | Size (MB) | ▓▓▓▓▓▓▓▓▓▓ |
+|--------|-----------|------------|
+| JSON (uncompressed) | 16.35 | ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓ |
+| WASM (optimized) | 10.95 | ▓▓▓▓▓▓▓▓▓▓▓ |
+| Brotli (compressed) | 4.96 | ▓▓▓▓▓ |
 
 ## Features
 

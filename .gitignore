@@ -1,12 +1,9 @@
 target
 pkg
-# Dataset files
-static/train.csv
-static/test.csv
-static/documents.json
-static/docfind.js
-static/docfind.wasm
-static/metrics.json
+# Temporary dataset files in scripts directory
+scripts/train.csv
+scripts/test.csv
+scripts/documents.json
 # Python cache
 __pycache__/
 *.pyc

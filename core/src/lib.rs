@@ -118,7 +118,13 @@ impl Index {
 pub fn build_index(documents: Vec<Document>) -> Result<Index, Box<dyn std::error::Error>> {
 	use std::collections::HashSet;
 
-	let sw = rake::StopWords::from_file(concat!(env!("CARGO_MANIFEST_DIR"), "/english.stop"))?;
+	let stop_words = include_str!("../english.stop")
+		.lines()
+		.filter(|line| !line.is_empty() && !line.starts_with('#'))
+		.map(|line| line.to_lowercase())
+		.collect::<HashSet<String>>();
+
+	let sw = rake::StopWords::from(stop_words);
 	let rake = rake::Rake::new(sw.clone());
 
 	let mut strings: Vec<&str> = Vec::new();

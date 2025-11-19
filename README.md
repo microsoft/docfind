@@ -75,14 +75,6 @@ The compiled binary will be available at `./target/release/docfind`.
 
 ## Usage
 
-### Checking Version
-
-To check the installed version:
-
-```bash
-docfind --version
-```
-
 ### Creating a Search Index
 
 Prepare a JSON file with your documents:

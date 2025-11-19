@@ -62,6 +62,17 @@ detect_platform() {
     info "Detected platform: $TARGET"
 }
 
+# Get the current installed version
+get_current_version() {
+    if command -v "$BINARY_NAME" >/dev/null 2>&1; then
+        # Extract version from "docfind X.Y.Z" output
+        CURRENT_VERSION=$("$BINARY_NAME" --version 2>/dev/null | sed -E 's/^[^ ]+ //')
+        if [ -n "$CURRENT_VERSION" ]; then
+            echo "$CURRENT_VERSION"
+        fi
+    fi
+}
+
 # Get the latest release version
 get_latest_version() {
     info "Fetching latest release..."
@@ -184,6 +195,22 @@ main() {
     
     detect_platform
     get_latest_version
+    
+    # Check if already installed with the same version
+    CURRENT_VERSION=$(get_current_version)
+    if [ -n "$CURRENT_VERSION" ]; then
+        info "Current version: $CURRENT_VERSION"
+        # Strip 'v' prefix from VERSION if present for comparison
+        LATEST_VERSION_NUM=$(echo "$VERSION" | sed 's/^v//')
+        if [ "$CURRENT_VERSION" = "$LATEST_VERSION_NUM" ] || [ "$CURRENT_VERSION" = "$VERSION" ]; then
+            info "$BINARY_NAME $CURRENT_VERSION is already installed (latest version)"
+            echo ""
+            echo "If you want to reinstall, please uninstall first:"
+            echo "  ${GREEN}rm \$(which $BINARY_NAME)${NC}"
+            exit 0
+        fi
+    fi
+    
     install_binary
     post_install
 }

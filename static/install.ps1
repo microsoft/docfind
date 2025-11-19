@@ -38,6 +38,25 @@ function Get-Architecture {
     }
 }
 
+# Get the current installed version
+function Get-CurrentVersion {
+    try {
+        # Check if docfind is in PATH and can be executed
+        $currentVersionOutput = & $BinaryName --version 2>&1
+        if ($LASTEXITCODE -eq 0 -and $currentVersionOutput) {
+            # Extract version from "docfind X.Y.Z" output
+            $versionMatch = $currentVersionOutput -match "^$BinaryName\s+(.+)$"
+            if ($versionMatch -and $Matches[1]) {
+                return $Matches[1].Trim()
+            }
+        }
+    }
+    catch {
+        # Binary not found or not executable
+    }
+    return $null
+}
+
 # Get the latest release version
 function Get-LatestVersion {
     Write-Info "Fetching latest release..."
@@ -218,6 +237,22 @@ function Main {
     Write-Info "Detected platform: $target"
     
     $version = Get-LatestVersion
+    
+    # Check if already installed with the same version
+    $currentVersion = Get-CurrentVersion
+    if ($currentVersion) {
+        Write-Info "Current version: $currentVersion"
+        # Strip 'v' prefix from version if present for comparison
+        $latestVersionNum = $version -replace '^v', ''
+        if ($currentVersion -eq $latestVersionNum -or $currentVersion -eq $version) {
+            Write-Info "$BinaryName $currentVersion is already installed (latest version)"
+            Write-Host ""
+            Write-Host "If you want to reinstall, please uninstall first:" -ForegroundColor Cyan
+            Write-Host "  Remove-Item (Get-Command $BinaryName).Path" -ForegroundColor Green
+            exit 0
+        }
+    }
+    
     Install-Binary -Version $version -Target $target
     
     $pathUpdated = $false

@@ -96,11 +96,32 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 		eprintln!("[docfind] input_path: {}", input_path);
 		eprintln!("[docfind] output_dir: {}", output_dir);
 	}
-	let documents_file = File::open(input_path)?;
-	let documents: Vec<Document> = serde_json::from_reader(documents_file)?;
+
+	let input_path = Path::new(input_path);
+	let input_path = input_path
+		.canonicalize()
+		.expect("Failed to canonicalize input path");
+
+	if debug {
+		eprintln!("[docfind] Canonicalized input path: {:?}", input_path);
+	}
+
+	let documents_file =
+		File::open(input_path).expect(format!("Failed to open documents file.").as_str());
+
+	if debug {
+		eprintln!("[docfind] Parsing documents JSON...");
+	}
+
+	let documents: Vec<Document> =
+		serde_json::from_reader(documents_file).expect("Failed to parse documents JSON");
+
+	if debug {
+		eprintln!("[docfind] Loaded {} documents.", documents.len());
+	}
 
 	let start = std::time::Instant::now();
-	let index = docfind_core::build_index(documents)?;
+	let index = docfind_core::build_index(documents).expect("Failed to build index");
 	let duration = start.elapsed();
 	if debug {
 		eprintln!("[docfind] Indexing completed in: {:?}", duration);

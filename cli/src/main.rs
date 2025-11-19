@@ -78,6 +78,12 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 	let debug = std::env::var("DOCFIND_DEBUG").is_ok();
 	let args: Vec<String> = std::env::args().collect();
 
+	// Handle --version flag
+	if args.len() == 2 && (args[1] == "--version" || args[1] == "-v") {
+		println!("docfind {}", env!("CARGO_PKG_VERSION"));
+		std::process::exit(0);
+	}
+
 	if args.len() != 3 {
 		eprintln!("Usage: {} <documents.json> <outdir>", args[0]);
 		std::process::exit(1);

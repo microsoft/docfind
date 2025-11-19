@@ -75,6 +75,7 @@ fn convert_const_expr(
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
+	let debug = std::env::var("DOCFIND_DEBUG").is_ok();
 	let args: Vec<String> = std::env::args().collect();
 
 	if args.len() != 3 {
@@ -84,13 +85,22 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
 	let input_path = &args[1];
 	let output_dir = &args[2];
+	if debug {
+		eprintln!("[docfind] CWD: {:?}", std::env::current_dir()?);
+		eprintln!("[docfind] input_path: {}", input_path);
+		eprintln!("[docfind] output_dir: {}", output_dir);
+	}
 	let documents_file = File::open(input_path)?;
 	let documents: Vec<Document> = serde_json::from_reader(documents_file)?;
 
 	let start = std::time::Instant::now();
 	let index = docfind_core::build_index(documents)?;
 	let duration = start.elapsed();
-	println!("Indexing completed in: {:?}", duration);
+	if debug {
+		eprintln!("[docfind] Indexing completed in: {:?}", duration);
+	} else {
+		println!("Indexing completed in: {:?}", duration);
+	}
 
 	let start = std::time::Instant::now();
 	let mut sections: Vec<WasmSection> = Vec::new();
@@ -102,6 +112,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
 	let docfind_js: &[u8] = include_bytes!("../../wasm/pkg/docfind.js");
 	let docfind_bg_wasm: &[u8] = include_bytes!("../../wasm/pkg/docfind_bg.wasm");
+	if debug {
+		eprintln!("[docfind] Embedded JS size: {} bytes", docfind_js.len());
+		eprintln!(
+			"[docfind] Embedded WASM size: {} bytes",
+			docfind_bg_wasm.len()
+		);
+	}
 
 	for payload in Parser::new(0).parse_all(docfind_bg_wasm) {
 		let payload = payload?;
@@ -188,6 +205,16 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 		index_base_global_index.expect("Could not find INDEX_BASE global index");
 	let index_len_global_index =
 		index_len_global_index.expect("Could not find INDEX_LEN global index");
+	if debug {
+		eprintln!(
+			"[docfind] INDEX_BASE global index: {}",
+			index_base_global_index
+		);
+		eprintln!(
+			"[docfind] INDEX_LEN global index: {}",
+			index_len_global_index
+		);
+	}
 
 	let index_base_global_address = i32_globals
 		.get(&index_base_global_index)
@@ -196,12 +223,28 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 	let index_len_global_address = i32_globals
 		.get(&index_len_global_index)
 		.expect("Could not find INDEX_LEN global value");
+	if debug {
+		eprintln!(
+			"[docfind] INDEX_BASE address: {}",
+			index_base_global_address
+		);
+		eprintln!("[docfind] INDEX_LEN address: {}", index_len_global_address);
+	}
 
 	let raw_index: Vec<u8> = index.to_bytes()?; // will embed into wasm
-	println!("Index size: {} bytes", raw_index.len());
+	if debug {
+		eprintln!("[docfind] Index size: {} bytes", raw_index.len());
+	} else {
+		println!("Index size: {} bytes", raw_index.len());
+	}
 
 	let new_memory_page_count = old_memory_page_count + (raw_index.len() as u64 / 0x10000) + 1;
 	let index_base = old_memory_page_count * 0x10000;
+	if debug {
+		eprintln!("[docfind] Old memory pages: {}", old_memory_page_count);
+		eprintln!("[docfind] New memory pages: {}", new_memory_page_count);
+		eprintln!("[docfind] Index base address: {}", index_base);
+	}
 
 	let mut encoder = wasm_encoder::Module::new();
 

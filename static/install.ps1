@@ -1,5 +1,6 @@
 # docfind installer script for Windows
-# Usage: irm https://microsoft.github.io/docfind/install.ps1 | iex
+# Usage: powershell -ExecutionPolicy Bypass -Command "irm https://microsoft.github.io/docfind/install.ps1 | iex"
+# Or from PowerShell directly: irm https://microsoft.github.io/docfind/install.ps1 | iex
 
 $ErrorActionPreference = 'Stop'
 

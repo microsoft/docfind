@@ -34,8 +34,13 @@ curl -fsSL https://microsoft.github.io/docfind/install.sh | sh
 
 **Windows (PowerShell):**
 ```powershell
-irm https://microsoft.github.io/docfind/install.ps1 | iex
+powershell -ExecutionPolicy Bypass -Command "irm https://microsoft.github.io/docfind/install.ps1 | iex"
 ```
+
+> **Note:** If you're running this from PowerShell directly (not from cmd.exe or another shell), you can use:
+> ```powershell
+> irm https://microsoft.github.io/docfind/install.ps1 | iex
+> ```
 
 The installer will:
 - Download the latest release binary for your platform
@@ -54,6 +59,21 @@ Download the binary for your platform from the [latest release](https://github.c
 - **Windows (ARM64)**: `docfind-aarch64-pc-windows-msvc.exe`
 
 Rename it to `docfind` (or `docfind.exe` on Windows), make it executable, and place it in your PATH.
+
+### Troubleshooting
+
+#### Windows Installation Issues
+
+If you encounter permission errors when running the installation script on Windows:
+
+1. **Run from PowerShell directly**: Open PowerShell (not Command Prompt) and run:
+   ```powershell
+   powershell -ExecutionPolicy Bypass -Command "irm https://microsoft.github.io/docfind/install.ps1 | iex"
+   ```
+
+2. **If running from cmd.exe or another shell**: Use the full `powershell` command as shown above.
+
+3. **Manual download**: If the script continues to fail, use the [Manual Installation](#manual-installation) method above to download the binary directly.
 
 ### Building from Source
 

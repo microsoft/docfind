@@ -34,8 +34,13 @@ curl -fsSL https://microsoft.github.io/docfind/install.sh | sh
 
 **Windows (PowerShell):**
 ```powershell
-irm https://microsoft.github.io/docfind/install.ps1 | iex
+powershell -ExecutionPolicy Bypass -Command "irm https://microsoft.github.io/docfind/install.ps1 | iex"
 ```
+
+> **Note:** If you're running this from PowerShell directly (not from cmd.exe or another shell), you can use the shorter version:
+> ```powershell
+> iex "& { $(irm https://microsoft.github.io/docfind/install.ps1) }"
+> ```
 
 The installer will:
 - Download the latest release binary for your platform
@@ -54,6 +59,23 @@ Download the binary for your platform from the [latest release](https://github.c
 - **Windows (ARM64)**: `docfind-aarch64-pc-windows-msvc.exe`
 
 Rename it to `docfind` (or `docfind.exe` on Windows), make it executable, and place it in your PATH.
+
+### Troubleshooting
+
+#### Windows Installation Issues
+
+If you encounter permission errors when running the installation script on Windows:
+
+1. **Run from PowerShell directly**: Open PowerShell (not Command Prompt) and run:
+   ```powershell
+   powershell -ExecutionPolicy Bypass -Command "irm https://microsoft.github.io/docfind/install.ps1 | iex"
+   ```
+
+2. **If running from cmd.exe or another shell**: Use the full `powershell` command as shown above.
+
+3. **If running from Node.js**: The installation script is designed to be run directly in PowerShell, not through Node.js `child_process`. If you need to automate installation in Node.js, consider downloading the binary directly from GitHub releases and placing it in the desired location programmatically.
+
+4. **Manual download**: If the script continues to fail, use the [Manual Installation](#manual-installation) method above to download the binary directly.
 
 ### Building from Source
 

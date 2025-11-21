@@ -73,9 +73,7 @@ If you encounter permission errors when running the installation script on Windo
 
 2. **If running from cmd.exe or another shell**: Use the full `powershell` command as shown above.
 
-3. **If running from Node.js**: The installation script is designed to be run directly in PowerShell, not through Node.js `child_process`. If you need to automate installation in Node.js, consider downloading the binary directly from GitHub releases and placing it in the desired location programmatically.
-
-4. **Manual download**: If the script continues to fail, use the [Manual Installation](#manual-installation) method above to download the binary directly.
+3. **Manual download**: If the script continues to fail, use the [Manual Installation](#manual-installation) method above to download the binary directly.
 
 ### Building from Source
 

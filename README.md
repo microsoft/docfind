@@ -37,9 +37,9 @@ curl -fsSL https://microsoft.github.io/docfind/install.sh | sh
 powershell -ExecutionPolicy Bypass -Command "irm https://microsoft.github.io/docfind/install.ps1 | iex"
 ```
 
-> **Note:** If you're running this from PowerShell directly (not from cmd.exe or another shell), you can use the shorter version:
+> **Note:** If you're running this from PowerShell directly (not from cmd.exe or another shell), you can use:
 > ```powershell
-> iex "& { $(irm https://microsoft.github.io/docfind/install.ps1) }"
+> irm https://microsoft.github.io/docfind/install.ps1 | iex
 > ```
 
 The installer will:

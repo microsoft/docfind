@@ -172,6 +172,10 @@ The combination of FST and FSST provides:
 - Instant startup with lazy index loading
 - Zero network requests after initial load
 
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=microsoft/docfind&type=Date)](https://star-history.com/#microsoft/docfind&Date)
+
 ## References
 
 ### Prior Art

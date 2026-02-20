@@ -1,5 +1,5 @@
 use docfind_core::Document;
-use std::io::Write;
+use std::io::{BufReader, Write};
 use std::path::Path;
 use std::{collections::HashMap, fs::File};
 use wasm_encoder::{ConstExpr, DataSection, MemorySection, MemoryType};
@@ -97,7 +97,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 		eprintln!("[docfind] output_dir: {}", output_dir);
 	}
 	let documents_file = File::open(input_path)?;
-	let documents: Vec<Document> = serde_json::from_reader(documents_file)?;
+	let documents_buffer = BufReader::new(documents_file);
+	let documents: Vec<Document> = serde_json::from_reader(documents_buffer)?;
 
 	let start = std::time::Instant::now();
 	let index = docfind_core::build_index(documents)?;

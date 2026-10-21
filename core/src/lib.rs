@@ -1,5 +1,7 @@
 use serde::{Deserialize, Serialize};
 
+pub mod cjk;
+
 #[cfg(any(feature = "cli", feature = "wasm", test))]
 use std::collections::HashMap;
 
@@ -155,7 +157,7 @@ pub fn build_index(documents: Vec<Document>) -> Result<Index, Box<dyn std::error
 			}
 		}
 
-		// add keywords from title
+		// add keywords from title (Latin words)
 		let title_keywords = doc
 			.title
 			.split_whitespace()
@@ -173,6 +175,15 @@ pub fn build_index(documents: Vec<Document>) -> Result<Index, Box<dyn std::error
 			}
 		}
 
+		// CJK keywords from the title (n-grams / Korean words)
+		for ck in cjk::extract_cjk_keywords(&doc.title) {
+			if !keyword_set.contains(&ck) {
+				keywords.push((ck.clone(), 90.0));
+				keyword_set.insert(ck);
+			}
+		}
+
+		// RAKE on the Latin portions of the body
 		let body_keywords = rake.run_fragments(vec![doc.body.as_str()]);
 		let mut single_word_budget = 5;
 		let mut double_word_budget = 3;
@@ -200,6 +211,15 @@ pub fn build_index(documents: Vec<Document>) -> Result<Index, Box<dyn std::error
 
 			if single_word_budget == 0 && double_word_budget == 0 {
 				break;
+			}
+		}
+
+		// CJK keywords from the body (n-grams for Chinese/Japanese,
+		// space-split for Korean)
+		for ck in cjk::extract_cjk_keywords(&doc.body) {
+			if !keyword_set.contains(&ck) {
+				keywords.push((ck.clone(), 70.0));
+				keyword_set.insert(ck);
 			}
 		}
 
@@ -255,6 +275,7 @@ pub fn search(
 
 	let map = fst::Map::new(&index.fst)?;
 
+	// Latin query words — split on whitespace and strip punctuation
 	let mut query_words: HashSet<String> = query
 		.split_whitespace()
 		.map(|w| {
@@ -266,9 +287,15 @@ pub fn search(
 
 	query_words.insert(query.to_lowercase());
 
+	// CJK query tokens — n-grams for Chinese/Japanese, space-split for Korean.
+	// These are looked up exactly (no Levenshtein) because the FST contains
+	// the same n-grams produced at index time.
+	let cjk_query_tokens = cjk::extract_cjk_keywords(query);
+
 	let mut keywords: Vec<(String, u64)> = Vec::new();
 
-	for query_word in query_words {
+	// --- Latin / mixed words: fuzzy + prefix lookup ---
+	for query_word in &query_words {
 		use fst::automaton::Str;
 
 		let lev = Levenshtein::new(query_word.as_str(), 1)?;
@@ -283,6 +310,13 @@ pub fn search(
 			let keyword_str = String::from_utf8(keyword.to_vec())?;
 			let score = indexed_value.to_vec().get(0).unwrap().value;
 			keywords.push((keyword_str, score));
+		}
+	}
+
+	// --- CJK tokens: exact lookup in the FST (n-grams must match exactly) ---
+	for cjk_token in &cjk_query_tokens {
+		if let Some(idx) = map.get(cjk_token.as_str()) {
+			keywords.push((cjk_token.clone(), idx));
 		}
 	}
 
